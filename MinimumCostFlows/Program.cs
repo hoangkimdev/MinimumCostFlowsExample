@@ -13,28 +13,29 @@ namespace MinimumCostFlows
         {
             Console.OutputEncoding = Encoding.GetEncoding("UTF-8");
 
-            Store A = new Store("TP Ho Chi Minh", 10.823099, 106.629662, 10);
+            // input sample
+            Store A = new Store("TP Ho Chi Minh", 10.823099, 106.629662, 12);
             Store B = new Store("TP Di An", 10.896476, 106.752739, -13);
-            Store C = new Store("Thu Dau Mot", 10.981680, 106.650490, -16);
-            Store D = new Store("Bien Hoa", 10.957413, 106.842690, 20);
-            Store E = new Store("Long An", 10.713440, 106.124840, 0);
-            Store F = new Store("Ba Ria VT", 10.493348, 107.168194, -13);
+            Store C = new Store("Thu Dau Mot", 10.981680, 106.650490, -6);
+            Store D = new Store("Bien Hoa", 10.957413, 106.842690, 8);
+            Store E = new Store("TP Long An", 10.713440, 106.124840, -6);
+            Store F = new Store("Ba Ria VT", 10.493348, 107.168194, -3);
             Store G = new Store("TX Long Khanh", 10.938091, 107.240153, -8);
-            Store H = new Store("Trang Bang", 11.033403, 106.358219, 20);
+            Store H = new Store("Trang Bang", 11.033403, 106.358219, 16);
 
             Store e1 = new Store("Cua hang 1", 10.523099, 107.639462, 15);
-            Store e2 = new Store("Cua hang 2", 10.422099, 106.679262, 23);
-            Store e3 = new Store("Cua hang 3", 10.328099, 107.619262, -23);
-            Store e4 = new Store("Cua hang 4", 10.222099, 106.649162, 34);
-            Store e5 = new Store("Cua hang 5", 10.121099, 107.659062, -24);
-            Store e6 = new Store("Cua hang 6", 10.927099, 106.669062, -53);
-            Store e7 = new Store("Cua hang 7", 10.426099, 107.619262, 19);
-            Store e8 = new Store("Cua hang 8", 10.323099, 106.609162, 12);
+            Store e2 = new Store("Cua hang 2", 10.422099, 106.679262, 3);
+            Store e3 = new Store("Cua hang 3", 10.328099, 107.619262, -13);
+            Store e4 = new Store("Cua hang 4", 10.222099, 106.649162, 4);
+            Store e5 = new Store("Cua hang 5", 10.121099, 107.659062, -4);
+            Store e6 = new Store("Cua hang 6", 10.927099, 106.669062, -13);
+            Store e7 = new Store("Cua hang 7", 10.426099, 107.619262, 9);
+            Store e8 = new Store("Cua hang 8", 10.323099, 106.609162, 2);
             Store e9 = new Store("Cua hang 9", 10.228099, 107.609062, 5);
             Store e0 = new Store("Cua hang 0", 10.722099, 106.619962, -8);
 
             List<Store> listStore = new List<Store> { A, B, C, D, E, F, G, H,
-                /*e1, e2, e3, e4, e5, e6, e7, e8, e9, e0*/ };
+                e1, e2, e3, e4, e5, e6, e7, e8, e9, e0 };
 
             SolveMinCostFlow(listStore);
 
@@ -60,14 +61,13 @@ namespace MinimumCostFlows
         {
             var watch = System.Diagnostics.Stopwatch.StartNew();
 
-            // 1. Define Data
-            // Số node ~ cửa hàng
+            // 1. Define Data // Số node ~ cửa hàng
             int numNodes = listStore.Count();
             Console.WriteLine("Số cửa hàng: " + numNodes);
 
-            // Tổng số liên kết có thể giữa các node
+            // Số liên kết giữa các node (tối đa)
             int numArcs = numNodes * numNodes - numNodes;
-            Console.WriteLine("Số link: " + numArcs);
+            Console.WriteLine("Tổng số link: " + numArcs);
 
             // lượng hàng tồn kho của cửa hàng
             List<int> supplies = new List<int> { };
@@ -76,7 +76,7 @@ namespace MinimumCostFlows
             List<int> startNodes = new List<int> { };
             List<int> endNodes = new List<int> { };
 
-            // chi phí vận chuyển (startNode -> endNode tốn chi phí là unitCosts)
+            // chi phí vận chuyển (từ startNode -> endNode tốn chi phí là unitCosts)
             List<int> unitCosts = new List<int> { };
 
             // kiểm tra đủ hàng / thiếu hàng trong lưu thông
@@ -109,7 +109,7 @@ namespace MinimumCostFlows
             for (int i = 0; i < numArcs; ++i)
             {
                 // mặc định capacities[i] = 99999 || lưu lượng (số lượng xe, đường kẹt xe?) 
-                // => mặc định max (vận chuyển bao nhiêu cũng được)
+                // => mặc định max (vận chuyển bao nhiêu cũng được) (tạm thời)
                 int arc = minCostFlow.AddArcWithCapacityAndUnitCost(
                     startNodes[i], endNodes[i], 99999999999999, unitCosts[i]);
                 if (arc != i) throw new Exception("Internal error");
@@ -121,10 +121,9 @@ namespace MinimumCostFlows
             if (solveStatus == 1)
             {
                 long optimalCost = minCostFlow.OptimalCost();
-                Console.WriteLine("Minimum cost: " + optimalCost);
-                Console.WriteLine("");
+                Console.WriteLine("\nTổng chi phí tối ưu: " + optimalCost);
                 Console.WriteLine(String.Format("{0}\t\t\t{1}\t\t{2}\t{3}\t{4}",
-                    "From", "To", "UnitCost", "Flow", "Cost"));
+                    "\nFrom", "To", "UnitCost", "Flow", "Cost"));
                 for (int i = 0; i < numArcs; ++i)
                 {
                     long cost = minCostFlow.Flow(i) * minCostFlow.UnitCost(i);
@@ -139,19 +138,9 @@ namespace MinimumCostFlows
                             cost));
                     }
                 }
-                Console.WriteLine("");
-                if (numBalanced == 0)
-                {
-                    Console.WriteLine("Đã chia đủ hàng.");
-                }
-                else if (numBalanced < 0)
-                {
-                    Console.WriteLine("Thiếu hàng, số lượng: " + (-1) * numBalanced);
-                }
-                else
-                {
-                    Console.WriteLine("Thừa hàng, số lượng: " + numBalanced);
-                }
+                if (numBalanced == 0) Console.WriteLine("\nĐã chia đủ hàng.");
+                else if (numBalanced < 0) Console.WriteLine("\nThiếu hàng, số lượng: " + (-1) * numBalanced);
+                else Console.WriteLine("\nThừa hàng, số lượng: " + numBalanced);
             }
             else
             {
@@ -161,8 +150,7 @@ namespace MinimumCostFlows
 
             watch.Stop();
             var elapsedMs = watch.ElapsedMilliseconds;
-            Console.WriteLine("");
-            Console.WriteLine("Time exec: " + elapsedMs + " (Milliseconds)");
+            Console.WriteLine("\nTime exec: " + elapsedMs + " (Milliseconds)");
         }
         public static int GetDistance(double LatA, double LongA, double LatB, double LongB)
         {
