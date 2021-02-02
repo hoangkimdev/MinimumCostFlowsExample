@@ -13,7 +13,7 @@ namespace MinimumCostFlows
         {
             Console.OutputEncoding = Encoding.GetEncoding("UTF-8");
 
-            // input sample
+            // input sample || Sieu thi - sieu thi
             Store A = new Store("TP Hồ Chí Minh", 10.823099, 106.629662, 12);
             Store B = new Store("TP Dĩ An", 10.896476, 106.752739, -13);
             Store C = new Store("Thủ Dầu Một", 10.981680, 106.650490, -6);
@@ -30,45 +30,48 @@ namespace MinimumCostFlows
             Store O = new Store("H Trảng Bom", 10.953290, 107.005341, -4);
             Store Q = new Store("TT Bến Lức", 10.635149, 106.491248, -13);
 
-            Store e7 = new Store("Cua hang 7", 10.426099, 107.619262, 9);
-            Store e8 = new Store("Cua hang 8", 10.323099, 106.609162, 2);
-            Store e9 = new Store("Cua hang 9", 10.228099, 107.609062, 5);
-            Store e0 = new Store("Cua hang 0", 10.722099, 106.619962, -8);
-            Store e11 = new Store("Cua hang 11", 10.129099, 107.139262, 24);
-            Store e21 = new Store("Cua hang 21", 10.928099, 106.79212, -12);
-            Store e31 = new Store("Cua hang 31", 10.327099, 107.119362, -30);
-            Store e41 = new Store("Cua hang 41", 10.426099, 106.749962, 12);
-            Store e51 = new Store("Cua hang 51", 10.525099, 107.359162, -121);
-            Store e61 = new Store("Cua hang 61", 10.624099, 106.069462, 12);
-            Store e71 = new Store("Cua hang 71", 10.726099, 107.219162, -19);
-            Store e81 = new Store("Cua hang 81", 10.824099, 106.309162, 19);
-            Store e91 = new Store("Cua hang 91", 10.223099, 107.109262, 35);
-            Store e01 = new Store("Cua hang 01", 10.029099, 106.819462, 12);
+            List<Store> listStore = new List<Store> { A, B, C, D, E, F, G, H, I, K, M, N, O, Q};
+            StoreSolveMinCost(listStore);
 
-            List<Store> listStore = new List<Store> { A, B, C, D, E, F, G, H, I, K, M, N, O, Q,
-                e7, e8, e9, e0, e11, e21, e31, e41, e51, e61, e71, e81, e91, e01};
+            // input sample || Kho - Khu Vuc
+            Node A0 = new Node(0, 3000);    // 0 - "Kho Long Bình"
+            Node B1 = new Node(11, 500);    // 1 - "Kho Cam Ranh"
+            Node C2 = new Node(22, 500);    // 2 - "Kho Nhà Bè"
+            Node D3 = new Node(33, 500);    // 3 - "Kho Long Bình 2"
 
-            SolveMinCostFlow(listStore);
+            Node E4 = new Node(44, 2000);   // 4 - "KV Long Bình"
+            Node F5 = new Node(55, 1000);   // 5 - "Kv Cam Ranh"
+            Node G6 = new Node(66, 2500);   // 6 - "Kv Nhà Bè"
+
+            LinkCase l0 = new LinkCase(A0.Id, A0.Num, E4.Id, E4.Num, 1);
+            LinkCase l1 = new LinkCase(A0.Id, A0.Num, F5.Id, F5.Num, 999);
+            LinkCase l2 = new LinkCase(A0.Id, A0.Num, G6.Id, G6.Num, 99);
+            LinkCase l3 = new LinkCase(B1.Id, B1.Num, F5.Id, F5.Num, 1);
+            LinkCase l4 = new LinkCase(B1.Id, B1.Num, G6.Id, G6.Num, 999);
+            LinkCase l5 = new LinkCase(C2.Id, C2.Num, E4.Id, E4.Num, 99);
+            LinkCase l6 = new LinkCase(C2.Id, C2.Num, G6.Id, G6.Num, 1);
+            LinkCase l7 = new LinkCase(D3.Id, D3.Num, E4.Id, E4.Num, 1);
+            LinkCase l8 = new LinkCase(D3.Id, D3.Num, F5.Id, F5.Num, 999);
+            List<LinkCase> listLinkCase = new List<LinkCase> { l0, l1, l2, l3, l4, l5, l6, l7, l8 };
+
+            double distancePercent = 0.1;
+
+            // input: list các liên kết kho - khu vực, trọng số của chi phí khoảng cách (<1), bool check 1-1
+            Console.WriteLine("\n___ 1 - n ____\n");
+            List<ResultLine> resultLines = SolveMinCost(listLinkCase, distancePercent, false);
+            PrintResult(resultLines);
+
+            Console.WriteLine("\n___ 1 - 1 ____\n");
+            List<ResultLine> resultLines2 = SolveMinCost(listLinkCase, distancePercent, true);
+            PrintResult(resultLines2);
+
+            Console.WriteLine("\n__end");
 
             Console.ReadKey();
             Console.ReadKey();
             Console.ReadKey();
         }
-        public class Store
-        {
-            public string Name { get; set; }
-            public double LatY { get; set; }
-            public double LongX { get; set; }
-            public int Supplies { get; set; }
-            public Store(string name, double latY, double longX, int supplies)
-            {
-                this.Name = name;
-                this.LatY = latY;
-                this.LongX = longX;
-                this.Supplies = supplies;
-            }
-        }
-        private static void SolveMinCostFlow(List<Store> listStore)
+        private static void StoreSolveMinCost(List<Store> listStore)
         {
             var watch = System.Diagnostics.Stopwatch.StartNew();
 
@@ -173,6 +176,206 @@ namespace MinimumCostFlows
             var sCoord = new GeoCoordinate(LatA, LongA);
             var eCoord = new GeoCoordinate(LatB, LongB);
             return (int)(sCoord.GetDistanceTo(eCoord) / 1000);
+        }
+        private static List<ResultLine> SolveMinCost(List<LinkCase> listLinkCase, double distancePercent, bool is11)
+        {
+            if (distancePercent > 1)
+            {
+                Console.WriteLine("Trọng số chi phí khoảng cách không được phép > 1");
+                return null;
+            }
+            else
+            {
+                List<int> NodeIds = new List<int> { };
+                List<int> NodeSupplies = new List<int> { };
+                // độ lệch số lượng hàng
+                List<int> subNum = new List<int> { };
+                // chi phí chuyển hàng (tính trên 1 đơn vị hàng)
+                List<int> unitCosts = new List<int> { };
+                // output
+                List<ResultLine> resultLines = new List<ResultLine> { };
+
+                // Số liên kết
+                int numArcs = listLinkCase.Count();
+
+                for (int i = 0; i < numArcs; ++i)
+                {
+                    // tính các chi phí, nhân trọng số -> unitCost
+                    subNum.Add(Math.Abs(listLinkCase[i].NumSupply - listLinkCase[i].NumDemand));
+                    unitCosts.Add((int)(distancePercent * listLinkCase[i].Distance + (1 - distancePercent) * subNum[i]));
+                    // lấy danh sách startNode (kho / bên cung cấp)
+                    if (!NodeIds.Contains(listLinkCase[i].IdSupply))
+                    {
+                        NodeIds.Add(listLinkCase[i].IdSupply);
+                        NodeSupplies.Add(listLinkCase[i].NumSupply);
+                        // khởi tạo mặc định 1 luồng vận chuyển từ mỗi startNode() (để so sánh sau này)
+                        if (is11)
+                        {
+                            ResultLine result = new ResultLine(
+                                    listLinkCase[i].IdSupply,   // From
+                                    listLinkCase[i].IdDemand,   // To
+                                    0,                          // Flow
+                                    unitCosts[i],
+                                    listLinkCase[i].NumSupply * unitCosts[i]); // max cost
+                            resultLines.Add(result);
+                        }
+                    }
+                }
+                // lấy danh sách endNode (khu vực / bên có nhu cầu)
+                for (int i = 0; i < numArcs; ++i)
+                {
+                    if (!NodeIds.Contains(listLinkCase[i].IdDemand))
+                    {
+                        NodeIds.Add(listLinkCase[i].IdDemand);
+                        NodeSupplies.Add((-1) * listLinkCase[i].NumDemand);
+                    }
+                }
+
+                // Số node ~ (kho + khu vực)
+                int numNodes = NodeIds.Count();
+
+                // 2. Declare the solver and Loop to add data
+                MinCostFlow minCostFlow = new MinCostFlow(numNodes, numArcs);
+                for (int i = 0; i < numNodes; ++i)
+                {
+                    minCostFlow.SetNodeSupply(i, NodeSupplies[i]);
+                }
+                // Add each arc.
+                for (int i = 0; i < numArcs; ++i)
+                {
+                    int arc = minCostFlow.AddArcWithCapacityAndUnitCost(
+                        NodeIds.IndexOf(listLinkCase[i].IdSupply),
+                        NodeIds.IndexOf(listLinkCase[i].IdDemand),
+                        999999999999,    //(băng thông) capacities[i] -> max
+                        (1) * unitCosts[i]);
+                    if (arc != i) throw new Exception("Internal error");
+                }
+                // 3. Invoke the solver - Find the min cost flow.
+                int solveStatus = (int)minCostFlow.SolveMaxFlowWithMinCost();
+                if (solveStatus == 1)
+                {
+                    long optimalCost = 0;
+                    for (int i = 0; i < numArcs; ++i)
+                    {
+                        if (minCostFlow.Flow(i) != 0)
+                        {
+                            int cost = (int)(minCostFlow.Flow(i) * minCostFlow.UnitCost(i));
+                            ResultLine result = new ResultLine(
+                                        NodeIds[minCostFlow.Tail(i)],
+                                        NodeIds[minCostFlow.Head(i)],
+                                        (int)minCostFlow.Flow(i),
+                                        (int)minCostFlow.UnitCost(i),
+                                        cost);
+                            if (!is11)
+                            {
+                                resultLines.Add(result);
+                                NodeSupplies[minCostFlow.Tail(i)] -= (int)minCostFlow.Flow(i);
+                                NodeSupplies[minCostFlow.Head(i)] += (int)minCostFlow.Flow(i);
+                                optimalCost = minCostFlow.OptimalCost();
+                            }
+                            else // is11 is true
+                            {
+                                for (int index = 0; index < resultLines.Count(); ++index)
+                                {
+                                    // chọn lượt vận chuyển có cost min
+                                    if (NodeIds[minCostFlow.Tail(i)] == resultLines[index].From
+                                        && cost <= resultLines[index].Cost)
+                                    {
+                                        // -> cập nhật result tương ứng
+                                        resultLines[index] = result;
+                                        NodeSupplies[minCostFlow.Tail(i)] -= (int)minCostFlow.Flow(i);
+                                        NodeSupplies[minCostFlow.Head(i)] += (int)minCostFlow.Flow(i);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    // Tính lại lượng hàng thừa thiếu sau chia
+                    if (resultLines.Count() != 0)
+                    {
+                        // đẩy hàng từ kho dư -> khu vực thiếu
+                        if (is11)
+                        {
+                            for (int i = 0; i < numNodes; ++i)
+                            {
+                                // kho dư hàng
+                                if (NodeSupplies[i] > 0)
+                                {
+                                    for (int index = 0; index < resultLines.Count(); ++index)
+                                    {
+                                        // Kho dư hàng & khu vực thiếu hàng -> tiến hành chuyển hàng
+                                        if (NodeIds[i] == resultLines[index].From
+                                            && NodeSupplies[NodeIds.IndexOf(resultLines[index].To)] < 0)
+                                        {
+                                            int numFrom = NodeSupplies[i]; // hàng thừa
+                                            int numTo = NodeSupplies[NodeIds.IndexOf(resultLines[index].To)]; // hàng thiếu 
+                                            int addFlow = numFrom + numTo;
+                                            // cập nhật lại thông tin chuyển hàng, thừa, thiếu sau cùng
+                                            if (addFlow < 0)
+                                            {
+                                                resultLines[index].FLow += numFrom;
+                                                resultLines[index].Cost = resultLines[index].FLow * resultLines[index].UnitCost;
+                                                NodeSupplies[i] = 0;
+                                                NodeSupplies[NodeIds.IndexOf(resultLines[index].To)] += numFrom;
+                                            }
+                                            else
+                                            {
+                                                resultLines[index].FLow += (-1) * numTo;
+                                                resultLines[index].Cost = resultLines[index].FLow * resultLines[index].UnitCost;
+                                                NodeSupplies[i] += numTo;
+                                                NodeSupplies[NodeIds.IndexOf(resultLines[index].To)] = 0;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            // tính lại optimalCost
+                            for (int i = 0; i < resultLines.Count(); ++i)
+                            {
+                                optimalCost += resultLines[i].Cost;
+                            }
+                        }
+                        // in optimalCost + lượng thừa, thiếu
+                        for (int i = 0; i < numNodes; ++i)
+                        {
+                            if (NodeSupplies[i] == 0) continue;
+                            else if (NodeSupplies[i] > 0)
+                            {
+                                Console.WriteLine("'" + NodeIds[i] + "' dư hàng. Số lượng: " + NodeSupplies[i]);
+                            }
+                            else
+                            {
+                                Console.WriteLine("'" + NodeIds[i] + "' thiếu hàng, cần mua thêm. Số lượng: " + (-1) * NodeSupplies[i]);
+                            }
+                        }
+                        Console.WriteLine("\nTổng chi phí tối ưu: " + optimalCost + "\n");
+                    }
+                    return resultLines;
+                }
+                else
+                {
+                    Console.WriteLine("Solving the min cost flow problem failed. " + "Solver status: " + solveStatus);
+                    return null;
+                }
+            }
+        }
+        public static void PrintResult(List<ResultLine> resultLines)
+        {
+            if (resultLines != null && resultLines.Count() != 0)
+            {
+                Console.WriteLine(String.Format("{0}\t\t{1}\t{2}\t{3}\t{4}",
+                "\nFrom", "To", "Flow", "UnitCost", "Cost"));
+                for (int i = 0; i < resultLines.Count(); ++i)
+                {
+                    Console.WriteLine(String.Format("{0}\t{1}\t{2}\t{3}\t{4}\t\t{5}",
+                               resultLines[i].From,
+                                " -> ",
+                                resultLines[i].To,
+                                resultLines[i].FLow,
+                                resultLines[i].UnitCost,
+                                resultLines[i].Cost));
+                }
+            }
         }
     }
 }
