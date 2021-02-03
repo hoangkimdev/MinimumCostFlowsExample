@@ -1,4 +1,8 @@
-﻿public class Store
+﻿//############################################################
+// Siêu thị - siêu thị: cân bằng hàng tồn                 ####
+//############################################################
+// Store ~ Siêu thị: Tên, tọa độ, lượng hàng tồn (+ dư hàng, - thiếu hàng)
+public class Store
 {
     public string Name { get; set; }
     public double LatY { get; set; }
@@ -12,6 +16,10 @@
         this.Supplies = supplies;
     }
 }
+//############################################################
+// Kho - Khu vực: chia hàng từ kho                        ####
+//############################################################
+// Node ~ một kho/ một khu vực: mã, lượng hàng
 public class Node
 {
     public int Id { get; set; }
@@ -22,6 +30,8 @@ public class Node
         this.Num = num;
     }
 }
+// LinkCase ~ một link giữa Node - Node: 
+// Mã kho, lượng hàng tồn, mã khu vực, lượng nhu cầu, khoảng cách giữa 2 Node
 public class LinkCase
 {
     public int IdSupply { get; set; }
@@ -38,20 +48,22 @@ public class LinkCase
         this.Distance = distance;
     }
 }
+// ResultLine ~ output: mã Node cung hàng, mã Node cầu hàng, 
+// lượng hàng chuyển, chi phí vận chuyển (khoảng cách), tổng chi phí của lượt chuyển
 public class ResultLine
 {
     public int From { get; set; }
     public int To { get; set; }
     public int FLow { get; set; }
-    public int UnitCost { get; set; }
-    public int Cost { get; set; }
+    public int Distance { get; set; }
+    public int RealCost { get; set; }
 
-    public ResultLine(int from, int to, int flow, int unitCost, int cost)
+    public ResultLine(int from, int to, int flow, int distance, int realCost)
     {
         this.From = from;
         this.To = to;
         this.FLow = flow;
-        this.UnitCost = unitCost;
-        this.Cost = cost;
+        this.Distance = distance;
+        this.RealCost = realCost;
     }
 }
