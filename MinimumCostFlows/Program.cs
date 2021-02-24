@@ -193,8 +193,6 @@ namespace MinimumCostFlows
             {
                 List<int> NodeIds = new List<int> { };
                 List<int> NodeSupplies = new List<int> { };
-                // độ lệch số lượng hàng (phần trăm)
-                List<double> subNum = new List<double> { };
                 // chi phí chuyển hàng (tính trên 1 đơn vị hàng)
                 List<int> unitCosts = new List<int> { };
                 // output
@@ -222,13 +220,21 @@ namespace MinimumCostFlows
                 for (int i = 0; i < numArcs; ++i)
                 {
                     // tính các chi phí, nhân trọng số -> unitCost
-                    // tính sub theo % độ lệch
-                    subNum.Add(Math.Abs((double)(listLinkCase[i].NumSupply - listLinkCase[i].NumDemand)
-                        / Math.Min(listLinkCase[i].NumSupply, listLinkCase[i].NumDemand) * 100));
+                    // tính độ lệch hàng
+                    int subNum = listLinkCase[i].NumSupply - listLinkCase[i].NumDemand;
+                    if (subNum >= 0)
+                    {
+                        // Cung >= Cầu -> không cần xét tới độ lệch hàng / subPercent = 0
+                        unitCosts.Add((int)(distancePercent * listLinkCase[i].Distance));
+                    }
+                    else
+                    {
+                        // Cung < Cầu -> thiếu hàng -> thiếu bao nhiêu %
+                        double subPercent = Math.Abs((double)subNum / listLinkCase[i].NumDemand) * 100;
+                        unitCosts.Add((int)(distancePercent * listLinkCase[i].Distance + (1 - distancePercent) * subPercent));
+                        //Console.WriteLine(listLinkCase[i].IdSupply + " - " + listLinkCase[i].IdDemand + " thiếu : " + subPercent + " % hàng"); // test
+                    }
 
-                    //Console.WriteLine("sub " + listLinkCase[i].IdSupply + " - " + listLinkCase[i].IdDemand + ": " + subNum[i]); // test
-
-                    unitCosts.Add((int)(distancePercent * listLinkCase[i].Distance + (1 - distancePercent) * subNum[i]));
                     // lấy danh sách startNode (kho / bên cung cấp)
                     if (!NodeIds.Contains(listLinkCase[i].IdSupply))
                     {
